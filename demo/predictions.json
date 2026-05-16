@@ -1,0 +1,86 @@
+{
+  "project": "sales-intelligence-agent",
+  "generated_at": "2026-05-16T00:00:00Z",
+  "predictions": [
+    {
+      "ticket": "TechCorp Inc \u00b7 CTO \u00b7 series-B fintech \u00b7 200 employees \u00b7 just raised $40M",
+      "top_intent": "Tier-1 / qualified",
+      "confidence": 0.93,
+      "alternatives": [
+        {
+          "intent": "Tier-2 / nurture",
+          "confidence": 0.06
+        },
+        {
+          "intent": "Disqualified",
+          "confidence": 0.01
+        }
+      ],
+      "inference_ms": 4821.0
+    },
+    {
+      "ticket": "Startup XYZ \u00b7 Founder \u00b7 3 employees \u00b7 pre-seed \u00b7 no funding announced",
+      "top_intent": "Tier-3 / nurture",
+      "confidence": 0.78,
+      "alternatives": [
+        {
+          "intent": "Disqualified",
+          "confidence": 0.18
+        },
+        {
+          "intent": "Tier-2 / nurture",
+          "confidence": 0.04
+        }
+      ],
+      "inference_ms": 4456.0
+    },
+    {
+      "ticket": "MegaBank Corp \u00b7 VP Engineering \u00b7 enterprise \u00b7 50k employees \u00b7 hiring 30 SREs",
+      "top_intent": "Tier-1 / qualified",
+      "confidence": 0.96,
+      "alternatives": [
+        {
+          "intent": "Tier-2 / nurture",
+          "confidence": 0.03
+        },
+        {
+          "intent": "Disqualified",
+          "confidence": 0.01
+        }
+      ],
+      "inference_ms": 5123.0
+    },
+    {
+      "ticket": "Acme LLC \u00b7 Marketing Manager \u00b7 30 employees \u00b7 no recent signals",
+      "top_intent": "Tier-3 / nurture",
+      "confidence": 0.71,
+      "alternatives": [
+        {
+          "intent": "Disqualified",
+          "confidence": 0.21
+        },
+        {
+          "intent": "Tier-2 / nurture",
+          "confidence": 0.08
+        }
+      ],
+      "inference_ms": 4198.0
+    },
+    {
+      "ticket": "GrowthCo \u00b7 Head of AI \u00b7 series-C \u00b7 adopted LangChain \u00b7 public Slack hiring posts",
+      "top_intent": "Tier-1 / qualified",
+      "confidence": 0.91,
+      "alternatives": [
+        {
+          "intent": "Tier-2 / nurture",
+          "confidence": 0.08
+        },
+        {
+          "intent": "Disqualified",
+          "confidence": 0.01
+        }
+      ],
+      "inference_ms": 4892.0
+    }
+  ]
+}
