@@ -1,57 +1,108 @@
-"""Planner — decides which queries to run for a target company."""
+"""Planner node: decides which search queries to run for a target company."""
+
 from __future__ import annotations
 
-import json
-from tenacity import retry, stop_after_attempt, wait_exponential
+from loguru import logger
 
+from src.llm import LLMClient, parse_json_object, recoverable_llm_errors
 
 SYSTEM = """You plan research queries for a B2B sales intelligence agent.
 
-Given a target company name + optional context, produce a JSON list of 3-6
-specific web search queries that will gather: funding info, leadership,
-product/positioning, recent news, hiring signals.
+Given a target company name, optional context and the list of information that
+is still missing, produce 3-6 specific web search queries that will gather:
+funding, leadership, product/positioning, recent news and hiring signals.
 
-Output JSON only, schema:
-{ "queries": ["query1", "query2", ...] }
+Output JSON only:
+{ "queries": ["query 1", "query 2", "..."] }
 
-Keep queries short and specific. No quotes inside queries.
+Keep queries short and specific. No quotes inside queries. Never repeat a
+query that was already run.
 """
+
+_DEFAULT_TEMPLATES: tuple[str, ...] = (
+    "{name} recent funding round",
+    "{name} CEO founder leadership",
+    "{name} product what does it do",
+    "{name} hiring engineering team",
+    "{name} news 2026",
+)
 
 
 class ResearchPlanner:
-    def __init__(self, model: str, api_key: str | None) -> None:
-        self.model = model
-        self.api_key = api_key
+    """Produces search queries with the LLM or a deterministic template set.
 
-    @retry(stop=stop_after_attempt(2), wait=wait_exponential(multiplier=1, min=1, max=5), reraise=True)
-    async def plan(self, company_name: str, context: str | None = None) -> list[str]:
-        if not self.api_key:
-            return self._default_queries(company_name)
-        from langchain_anthropic import ChatAnthropic
-        from langchain_core.messages import HumanMessage, SystemMessage
-        chat = ChatAnthropic(model=self.model, api_key=self.api_key, temperature=0.3, max_tokens=300, timeout=15.0)
+    Args:
+        llm: Completion client; ``None`` selects the offline heuristic.
+    """
+
+    def __init__(self, llm: LLMClient | None) -> None:
+        self.llm = llm
+
+    async def plan(
+        self,
+        company_name: str,
+        context: str | None = None,
+        *,
+        missing: list[str] | None = None,
+        already_run: list[str] | None = None,
+    ) -> list[str]:
+        """Return the next batch of queries.
+
+        Args:
+            company_name: Target company.
+            context: Optional seed context from the caller (domain, notes).
+            missing: Information gaps reported by the reflector.
+            already_run: Queries executed in previous iterations.
+
+        Returns:
+            Between 1 and 6 queries.
+        """
+        if self.llm is None:
+            return self.default_queries(company_name, missing=missing, already_run=already_run)
         user = f"<company>{company_name}</company>"
         if context:
             user += f"\n<context>{context}</context>"
-        resp = await chat.ainvoke([SystemMessage(content=SYSTEM), HumanMessage(content=user)])
-        body = resp.content if isinstance(resp.content, str) else str(resp.content)
-        body = body.strip()
-        if body.startswith("```"):
-            body = body.strip("`")
-            if body.lower().startswith("json"):
-                body = body[4:].lstrip()
+        if missing:
+            user += f"\n<missing>{', '.join(missing)}</missing>"
+        if already_run:
+            user += "\n<already_run>\n" + "\n".join(already_run) + "\n</already_run>"
         try:
-            raw = json.loads(body)
-            return [str(q) for q in raw.get("queries", [])][:6]
-        except Exception:
-            return self._default_queries(company_name)
+            result = await self.llm.complete(
+                system=SYSTEM, user=user, max_tokens=300, temperature=0.3
+            )
+            raw = parse_json_object(result.text)
+            queries = [str(q).strip() for q in raw.get("queries", []) if str(q).strip()]
+        except recoverable_llm_errors() as exc:
+            logger.warning(f"planner LLM failed, using default queries: {exc!r}")
+            return self.default_queries(company_name, missing=missing, already_run=already_run)
+        if not queries:
+            logger.warning("planner LLM returned no queries, using defaults")
+            return self.default_queries(company_name, missing=missing, already_run=already_run)
+        return queries[:6]
 
     @staticmethod
-    def _default_queries(company_name: str) -> list[str]:
-        return [
-            f"{company_name} recent funding round",
-            f"{company_name} CEO founder leadership",
-            f"{company_name} product what does it do",
-            f"{company_name} hiring engineering team",
-            f"{company_name} news 2026",
-        ]
+    def default_queries(
+        company_name: str,
+        *,
+        missing: list[str] | None = None,
+        already_run: list[str] | None = None,
+    ) -> list[str]:
+        """Deterministic query set used offline and as fallback.
+
+        Args:
+            company_name: Target company.
+            missing: If given, one follow-up query per missing topic is produced.
+            already_run: Queries to exclude.
+
+        Returns:
+            Query list (never empty unless everything was already run).
+        """
+        seen = set(already_run or [])
+        if missing:
+            follow_ups = [f"{company_name} {topic}" for topic in missing[:3]]
+            fresh = [q for q in follow_ups if q not in seen]
+            if fresh:
+                return fresh
+        base = [t.format(name=company_name) for t in _DEFAULT_TEMPLATES]
+        fresh = [q for q in base if q not in seen]
+        return fresh or base[:1]

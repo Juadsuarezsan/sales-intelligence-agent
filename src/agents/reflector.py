@@ -1,76 +1,130 @@
-"""Reflector — decides whether collected evidence is sufficient."""
+"""Reflector node: decides whether the collected evidence is sufficient."""
+
 from __future__ import annotations
 
-import json
-from dataclasses import dataclass
-from typing import Sequence
+from collections.abc import Sequence
+from dataclasses import dataclass, field
+
+from loguru import logger
+
+from src.api.schemas import Evidence
+from src.llm import LLMClient, parse_json_object, recoverable_llm_errors
+
+SYSTEM = """You review research evidence about a company and decide whether it is
+enough to write a personalized B2B outreach email.
+
+Sufficiency rule: at least one of (funding OR product description) AND at least
+one of (leadership name OR recent signal such as hiring, launch, news).
+Also flag contradictions between sources (e.g. two different headcounts).
+
+Output JSON only:
+{
+  "sufficient": true | false,
+  "missing": ["funding", "leadership", "product", "recent_signal"],
+  "contradictions": ["..."],
+  "follow_up_queries": ["...", "..."],
+  "rationale": "one sentence"
+}
+"""
+
+_FUNDING = ("funding", "raised", "series ", "seed round", "$")
+_LEADER = ("ceo", "founder", "cto", "chief executive")
+_PRODUCT = ("platform", "saas", "product", "service", "software", "api")
+_SIGNAL = ("hiring", "open roles", "launch", "announce", "hn:", "points")
 
 
 @dataclass
 class ReflectionVerdict:
+    """Outcome of one reflection step.
+
+    Attributes:
+        sufficient: Whether the loop can stop searching.
+        missing: Topics still uncovered.
+        follow_up_queries: Queries suggested for the next iteration.
+        rationale: Short justification.
+        contradictions: Conflicting facts spotted across sources.
+    """
+
     sufficient: bool
     missing: list[str]
     follow_up_queries: list[str]
     rationale: str
+    contradictions: list[str] = field(default_factory=list)
 
 
 class Reflector:
-    def __init__(self, model: str, api_key: str | None) -> None:
-        self.model = model
-        self.api_key = api_key
+    """Judges evidence sufficiency with the LLM or a keyword heuristic.
 
-    async def reflect(self, company_name: str, evidence: Sequence[dict]) -> ReflectionVerdict:
-        if not self.api_key:
-            return self._heuristic(company_name, list(evidence))
-        from langchain_anthropic import ChatAnthropic
-        from langchain_core.messages import HumanMessage, SystemMessage
-        SYSTEM = """You review research evidence and decide if it is enough to write
-        a personalized B2B outreach email. Output JSON only:
+    Args:
+        llm: Completion client; ``None`` selects the offline heuristic.
+    """
 
-        {
-          "sufficient": true | false,
-          "missing": ["funding", "leadership", "product", ...],
-          "follow_up_queries": ["...", "..."],
-          "rationale": "one sentence"
-        }
+    def __init__(self, llm: LLMClient | None) -> None:
+        self.llm = llm
 
-        Required for sufficiency: at least one of (funding OR product description)
-        AND at least one of (leadership name OR recent signal).
+    async def reflect(self, company_name: str, evidence: Sequence[Evidence]) -> ReflectionVerdict:
+        """Evaluate the evidence gathered so far.
+
+        Args:
+            company_name: Target company.
+            evidence: Evidence items collected by the executor.
+
+        Returns:
+            The verdict.
         """
-        chat = ChatAnthropic(model=self.model, api_key=self.api_key, temperature=0, max_tokens=300, timeout=15.0)
-        ev = "\n".join(f"- {e.get('title','')}: {e.get('content','')[:160]}" for e in evidence[:10])
-        user = f"<company>{company_name}</company>\n<evidence>\n{ev}\n</evidence>"
-        resp = await chat.ainvoke([SystemMessage(content=SYSTEM), HumanMessage(content=user)])
-        body = resp.content if isinstance(resp.content, str) else str(resp.content)
-        body = body.strip()
-        if body.startswith("```"):
-            body = body.strip("`")
-            if body.lower().startswith("json"):
-                body = body[4:].lstrip()
+        if self.llm is None:
+            return self.heuristic(company_name, list(evidence))
+        lines = "\n".join(
+            f"- [{e.get('source', '?')}] {e.get('title', '')}: {e.get('content', '')[:200]}"
+            for e in evidence[:15]
+        )
+        user = f"<company>{company_name}</company>\n<evidence>\n{lines}\n</evidence>"
         try:
-            raw = json.loads(body)
+            result = await self.llm.complete(system=SYSTEM, user=user, max_tokens=400)
+            raw = parse_json_object(result.text)
             return ReflectionVerdict(
                 sufficient=bool(raw.get("sufficient", False)),
-                missing=list(raw.get("missing", [])),
-                follow_up_queries=list(raw.get("follow_up_queries", []))[:3],
+                missing=[str(m) for m in raw.get("missing", [])],
+                follow_up_queries=[str(q) for q in raw.get("follow_up_queries", [])][:3],
                 rationale=str(raw.get("rationale", "")),
+                contradictions=[str(c) for c in raw.get("contradictions", [])],
             )
-        except Exception:
-            return self._heuristic(company_name, list(evidence))
+        except recoverable_llm_errors() as exc:
+            logger.warning(f"reflector LLM failed, using heuristic: {exc!r}")
+            return self.heuristic(company_name, list(evidence))
 
     @staticmethod
-    def _heuristic(company_name: str, evidence: list[dict]) -> ReflectionVerdict:
-        text = " ".join(f"{e.get('title','')} {e.get('content','')}" for e in evidence).lower()
-        has_funding = any(w in text for w in ("funding", "raised", "series ", "$"))
-        has_leader = any(w in text for w in ("ceo", "founder", "cto"))
-        has_product = any(w in text for w in ("platform", "saas", "product", "service"))
-        sufficient = (has_funding or has_product) and (has_leader or len(evidence) >= 3)
-        missing = []
-        if not has_funding: missing.append("funding")
-        if not has_leader:  missing.append("leadership")
-        if not has_product: missing.append("product")
-        follow_ups = [f"{company_name} {m}" for m in missing[:2]]
+    def heuristic(company_name: str, evidence: list[Evidence]) -> ReflectionVerdict:
+        """Keyword-based sufficiency check used offline and as fallback.
+
+        Args:
+            company_name: Target company.
+            evidence: Evidence items.
+
+        Returns:
+            The verdict with ``rationale`` prefixed by ``heuristic:``.
+        """
+        text = " ".join(f"{e.get('title', '')} {e.get('content', '')}" for e in evidence).lower()
+        has_funding = any(w in text for w in _FUNDING)
+        has_leader = any(w in text for w in _LEADER)
+        has_product = any(w in text for w in _PRODUCT)
+        has_signal = any(w in text for w in _SIGNAL)
+        sufficient = (has_funding or has_product) and (has_leader or has_signal)
+        missing: list[str] = []
+        if not has_funding:
+            missing.append("funding")
+        if not has_leader:
+            missing.append("leadership")
+        if not has_product:
+            missing.append("product")
+        if not has_signal:
+            missing.append("recent signal")
         return ReflectionVerdict(
-            sufficient=sufficient, missing=missing, follow_up_queries=follow_ups,
-            rationale=f"heuristic: funding={has_funding} leader={has_leader} product={has_product}",
+            sufficient=sufficient,
+            missing=missing,
+            follow_up_queries=[f"{company_name} {m}" for m in missing[:2]],
+            rationale=(
+                f"heuristic: funding={has_funding} leader={has_leader} "
+                f"product={has_product} signal={has_signal}"
+            ),
         )
