@@ -76,7 +76,7 @@ def load_ground_truth(path: Path = DEFAULT_GROUND_TRUTH) -> list[GroundTruthComp
             batch=c.get("batch", ""),
             status=c.get("status", ""),
             long_description=c.get("long_description", ""),
-            tags=list(c.get("tags", [])),
+            tags=list(c.get("tags") or []),
             yc_url=c.get("yc_url", ""),
         )
         for c in companies

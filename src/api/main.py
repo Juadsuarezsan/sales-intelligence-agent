@@ -6,9 +6,11 @@ Endpoints:
 * ``POST /api/research`` - run the agent for one company (rate limited).
 * ``GET /api/companies`` - list persisted results for the gallery.
 * ``GET /api/companies/{name}`` - fetch one persisted result.
-"""
 
-from __future__ import annotations
+Note: this module deliberately has no ``from __future__ import annotations``;
+the slowapi decorator re-wraps the endpoint and FastAPI could then no longer
+resolve the string annotations of the request body.
+"""
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -69,7 +71,7 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore[arg-type]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=get_settings().cors_origins,
+    allow_origins=get_settings().cors_origin_list,
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type", TRACE_HEADER],
 )

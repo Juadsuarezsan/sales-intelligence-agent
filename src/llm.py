@@ -94,6 +94,7 @@ class AnthropicLLM:
         timeout_seconds: Per-request timeout.
         max_attempts: Total attempts (first try plus retries) on transient errors.
         tracing: Wrap the SDK client with the LangSmith tracer when ``True``.
+        backoff_seconds: ``(min, max)`` bounds of the exponential backoff between attempts.
     """
 
     def __init__(
@@ -104,11 +105,13 @@ class AnthropicLLM:
         timeout_seconds: float = 30.0,
         max_attempts: int = 3,
         tracing: bool = False,
+        backoff_seconds: tuple[float, float] = (1.0, 10.0),
     ) -> None:
         from anthropic import AsyncAnthropic
 
         self.model = model
         self.max_attempts = max_attempts
+        self.backoff_seconds = backoff_seconds
         client = AsyncAnthropic(api_key=api_key, timeout=timeout_seconds, max_retries=0)
         if tracing:
             from langsmith.wrappers import wrap_anthropic
@@ -143,7 +146,9 @@ class AnthropicLLM:
 
         retrying = AsyncRetrying(
             stop=stop_after_attempt(self.max_attempts),
-            wait=wait_exponential(multiplier=1, min=1, max=10),
+            wait=wait_exponential(
+                multiplier=1, min=self.backoff_seconds[0], max=self.backoff_seconds[1]
+            ),
             retry=retry_if_exception_type(
                 (APIConnectionError, APITimeoutError, RateLimitError, InternalServerError)
             ),

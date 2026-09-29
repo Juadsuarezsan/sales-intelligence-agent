@@ -53,9 +53,11 @@ JUDGE_SYSTEM = (
     '"rationale": "two sentences citing the rubric levels"}'
 )
 
-_MONEY_OR_ROUND = re.compile(
-    r"\$\s?\d+(?:\.\d+)?\s?(?:billion|million|bn|m|b)\b|series [a-h]", re.I
-)
+_MONEY = r"\$\s?\d+(?:\.\d+)?\s?(?:billion|million|bn|m|b)\b"
+_ROUND = r"series\s[a-h]\b"
+#: One factual claim: a money amount optionally followed by its round, or a bare round.
+_CLAIM = re.compile(rf"{_MONEY}(?:\s+(?:in\s+(?:a\s+|its\s+)?)?{_ROUND})?|{_ROUND}", re.I)
+_CLAIM_PARTS = re.compile(rf"{_MONEY}|{_ROUND}", re.I)
 _CTA_TIME = re.compile(
     r"\b(\d+[- ]?min(?:ute)?s?|next week|this week|tuesday|thursday|monday|"
     r"wednesday|friday|tomorrow)\b",
@@ -139,10 +141,15 @@ class QualityScorer:
                 facts += 1
         personalization = 1 if facts == 0 else 2 if facts == 1 else 4 if facts == 2 else 5
 
-        profile_text = profile.model_dump_json().lower()
-        claims = _MONEY_OR_ROUND.findall(email.body())
+        profile_text = profile.model_dump_json().lower().replace(" ", "")
+        claims = _CLAIM.findall(email.body())
         unsupported = sum(
-            1 for c in claims if c.lower().replace(" ", "") not in profile_text.replace(" ", "")
+            1
+            for claim in claims
+            if any(
+                part.lower().replace(" ", "") not in profile_text
+                for part in _CLAIM_PARTS.findall(claim)
+            )
         )
         accuracy = 5 if not claims else 4 if unsupported == 0 else 3 if unsupported == 1 else 1
 

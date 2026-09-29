@@ -153,6 +153,13 @@ def build_eval_set(
     return out
 
 
+def _rel(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
 def write_manifest(
     *,
     raw_path: Path,
@@ -182,12 +189,12 @@ def write_manifest(
         "source_repo: https://github.com/yc-oss/api",
         "source_license: MIT (repository code); company data is public information "
         "published by Y Combinator at https://www.ycombinator.com/companies",
-        f"raw_file: {raw_path.relative_to(REPO_ROOT)} (gitignored)",
+        f"raw_file: {_rel(raw_path)} (gitignored)",
         f"raw_sha256: {sha256_of(raw_path)}",
         f"raw_records: {n_raw}",
         f"eligible_records: {n_eligible} (status=Active, website, industry, location, "
         "one_liner and team_size>0 present)",
-        f"eval_file: {eval_path.relative_to(REPO_ROOT)}",
+        f"eval_file: {_rel(eval_path)}",
         f"eval_sha256: {sha256_of(eval_path)}",
         f"eval_records: {n_eval}",
         f"sample_seed: {seed}",

@@ -40,7 +40,7 @@ _PERSON = re.compile(
     r"\b(CEO|CTO|COO|CFO|founder|co-founder)\s+(?:is|:)\s+([A-Z][a-z]+(?:\s[A-Z][a-z]+){1,2})"
 )
 _LOCATION = re.compile(
-    r"\b(?:headquartered|based|located)\s+in\s+([A-Z][A-Za-z.]+(?:[ ,]+[A-Z][A-Za-z.]+){0,3})"
+    r"\b(?:headquartered|based|located)\s+in\s+([A-Z][A-Za-z]+(?:,? [A-Z][A-Za-z]+){0,3})"
 )
 _ROLES_OPEN = re.compile(r"open roles detected:\s*(\d+)", re.IGNORECASE)
 _TEAM = re.compile(r"\b(\d{1,4})\s+(?:employees|people|team members)\b", re.IGNORECASE)

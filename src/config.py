@@ -42,7 +42,7 @@ class Settings(BaseSettings):
         db_pool_min_size: Minimum connections in the psycopg pool.
         db_pool_max_size: Maximum connections in the psycopg pool.
         result_cache_ttl_seconds: TTL of the in-memory result cache.
-        cors_origins: Allowed CORS origins (comma separated in the environment).
+        cors_origins: Comma-separated allowed CORS origins (see ``cors_origin_list``).
         rate_limit: slowapi rate limit expression for ``POST /api/research``.
         langchain_tracing_v2: Enables LangSmith tracing of the LangGraph run.
         langchain_api_key: LangSmith API key (only read when tracing is enabled).
@@ -78,9 +78,8 @@ class Settings(BaseSettings):
     db_pool_max_size: int = Field(default=8, alias="DB_POOL_MAX_SIZE", ge=1)
     result_cache_ttl_seconds: int = Field(default=3600, alias="RESULT_CACHE_TTL_SECONDS", ge=0)
 
-    cors_origins: list[str] = Field(
-        default=["http://localhost:3000", "https://juadsuarezsan.github.io"],
-        alias="CORS_ORIGINS",
+    cors_origins: str = Field(
+        default="http://localhost:3000,https://juadsuarezsan.github.io", alias="CORS_ORIGINS"
     )
     rate_limit: str = Field(default="20/minute", alias="RATE_LIMIT")
 
@@ -88,21 +87,6 @@ class Settings(BaseSettings):
     langchain_api_key: str | None = Field(default=None, alias="LANGCHAIN_API_KEY")
     langchain_project: str = Field(default="sales-intelligence-agent", alias="LANGCHAIN_PROJECT")
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
-
-    @field_validator("cors_origins", mode="before")
-    @classmethod
-    def _split_origins(cls, value: object) -> object:
-        """Accept a comma-separated string as well as a JSON list.
-
-        Args:
-            value: Raw value coming from the environment.
-
-        Returns:
-            A list of non-empty, stripped origins.
-        """
-        if isinstance(value, str):
-            return [o.strip() for o in value.split(",") if o.strip()]
-        return value
 
     @field_validator("anthropic_api_key", "tavily_api_key", "database_url", "langchain_api_key")
     @classmethod
@@ -118,6 +102,11 @@ class Settings(BaseSettings):
         if value is None or not value.strip():
             return None
         return value.strip()
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        """``CORS_ORIGINS`` split on commas, blanks removed. Never contains ``*``."""
+        return [o.strip() for o in self.cors_origins.split(",") if o.strip() and o.strip() != "*"]
 
     @property
     def llm_enabled(self) -> bool:
