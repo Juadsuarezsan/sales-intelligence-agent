@@ -1,0 +1,252 @@
+"""Download the public YC companies dataset and build the 200-company eval set.
+
+Source: https://github.com/yc-oss/api (unofficial JSON mirror of the Y Combinator
+company directory, refreshed daily from YC's public Algolia index).
+
+Usage::
+
+    python scripts/download_data.py                  # download + build eval set
+    python scripts/download_data.py --raw data/raw/yc_companies_all.json  # reuse a local copy
+
+Outputs:
+
+* ``data/raw/yc_companies_all.json`` (gitignored, ~10 MB) - raw dataset.
+* ``data/eval/yc_ground_truth_200.json`` - the eval set (ground truth = YC metadata).
+* ``data/MANIFEST.txt`` - SHA-256 of both files, sample seed and selection rules.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import random
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any
+
+import httpx
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+DATA_DIR = REPO_ROOT / "data"
+RAW_URL = "https://raw.githubusercontent.com/yc-oss/api/main/companies/all.json"
+RAW_PATH = DATA_DIR / "raw" / "yc_companies_all.json"
+EVAL_PATH = DATA_DIR / "eval" / "yc_ground_truth_200.json"
+MANIFEST_PATH = DATA_DIR / "MANIFEST.txt"
+SEED = 20260516
+SAMPLE_SIZE = 200
+
+FIELDS_KEPT = (
+    "id",
+    "name",
+    "slug",
+    "website",
+    "industry",
+    "subindustry",
+    "all_locations",
+    "team_size",
+    "one_liner",
+    "long_description",
+    "batch",
+    "status",
+    "stage",
+    "tags",
+    "isHiring",
+    "launched_at",
+    "url",
+)
+
+
+def sha256_of(path: Path) -> str:
+    """Return the hex SHA-256 digest of a file.
+
+    Args:
+        path: File to hash.
+
+    Returns:
+        64-character hexadecimal digest.
+    """
+    h = hashlib.sha256()
+    with path.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def download(url: str, dest: Path, *, timeout: float = 60.0) -> Path:
+    """Download ``url`` to ``dest`` (streaming).
+
+    Args:
+        url: Source URL.
+        dest: Destination path (parent directories are created).
+        timeout: HTTP timeout in seconds.
+
+    Returns:
+        ``dest``.
+
+    Raises:
+        httpx.HTTPStatusError: On non-2xx responses.
+    """
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    with (
+        httpx.Client(timeout=timeout, follow_redirects=True) as client,
+        client.stream("GET", url) as response,
+    ):
+        response.raise_for_status()
+        with dest.open("wb") as fh:
+            for chunk in response.iter_bytes():
+                fh.write(chunk)
+    return dest
+
+
+def eligible(company: dict[str, Any]) -> bool:
+    """Selection rule for the eval set.
+
+    A company qualifies when every scored field has a value: active status,
+    non-empty website, industry, location and one-liner, and a numeric team
+    size greater than zero.
+
+    Args:
+        company: Raw YC record.
+
+    Returns:
+        ``True`` when the record can serve as ground truth.
+    """
+    team = company.get("team_size")
+    return (
+        company.get("status") == "Active"
+        and bool(company.get("website"))
+        and bool(company.get("industry"))
+        and bool(company.get("all_locations"))
+        and bool(company.get("one_liner"))
+        and isinstance(team, int)
+        and team > 0
+    )
+
+
+def build_eval_set(
+    raw: list[dict[str, Any]], *, sample_size: int = SAMPLE_SIZE, seed: int = SEED
+) -> list[dict[str, Any]]:
+    """Select a deterministic sample of eligible companies.
+
+    Args:
+        raw: Raw YC records.
+        sample_size: Number of companies to keep.
+        seed: Random seed for the shuffle.
+
+    Returns:
+        Sampled records reduced to the fields in :data:`FIELDS_KEPT`, with
+        ``all_locations`` renamed to ``location`` and ``url`` to ``yc_url``,
+        sorted by YC id.
+    """
+    pool = sorted((c for c in raw if eligible(c)), key=lambda c: int(c["id"]))
+    rng = random.Random(seed)
+    rng.shuffle(pool)
+    chosen = sorted(pool[:sample_size], key=lambda c: int(c["id"]))
+    out: list[dict[str, Any]] = []
+    for c in chosen:
+        rec = {k: c.get(k) for k in FIELDS_KEPT}
+        rec["location"] = rec.pop("all_locations")
+        rec["yc_url"] = rec.pop("url")
+        out.append(rec)
+    return out
+
+
+def write_manifest(
+    *,
+    raw_path: Path,
+    eval_path: Path,
+    manifest_path: Path,
+    n_raw: int,
+    n_eligible: int,
+    n_eval: int,
+    seed: int,
+) -> None:
+    """Write ``data/MANIFEST.txt`` with hashes and provenance.
+
+    Args:
+        raw_path: Raw dataset file.
+        eval_path: Eval set file.
+        manifest_path: Output path.
+        n_raw: Number of raw records.
+        n_eligible: Number of eligible records.
+        n_eval: Number of sampled records.
+        seed: Sampling seed.
+    """
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    lines = [
+        "# data/MANIFEST.txt - generated by scripts/download_data.py",
+        f"generated_at: {datetime.now(UTC).isoformat(timespec='seconds')}",
+        f"source_url: {RAW_URL}",
+        "source_repo: https://github.com/yc-oss/api",
+        "source_license: MIT (repository code); company data is public information "
+        "published by Y Combinator at https://www.ycombinator.com/companies",
+        f"raw_file: {raw_path.relative_to(REPO_ROOT)} (gitignored)",
+        f"raw_sha256: {sha256_of(raw_path)}",
+        f"raw_records: {n_raw}",
+        f"eligible_records: {n_eligible} (status=Active, website, industry, location, "
+        "one_liner and team_size>0 present)",
+        f"eval_file: {eval_path.relative_to(REPO_ROOT)}",
+        f"eval_sha256: {sha256_of(eval_path)}",
+        f"eval_records: {n_eval}",
+        f"sample_seed: {seed}",
+        "ground_truth: YC metadata fields (name, website, industry, location, team_size, "
+        "one_liner, batch, status); no synthetic values.",
+    ]
+    manifest_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def main(argv: list[str] | None = None) -> int:
+    """CLI entry point.
+
+    Args:
+        argv: Arguments (defaults to ``sys.argv[1:]``).
+
+    Returns:
+        Process exit code.
+    """
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--url", default=RAW_URL)
+    parser.add_argument(
+        "--raw", type=Path, default=RAW_PATH, help="Raw file path (download target or local copy)"
+    )
+    parser.add_argument("--out", type=Path, default=EVAL_PATH)
+    parser.add_argument("--manifest", type=Path, default=MANIFEST_PATH)
+    parser.add_argument("--sample-size", type=int, default=SAMPLE_SIZE)
+    parser.add_argument("--seed", type=int, default=SEED)
+    parser.add_argument("--skip-download", action="store_true", help="Reuse --raw if it exists")
+    args = parser.parse_args(argv)
+
+    if args.skip_download and args.raw.exists():
+        print(f"reusing {args.raw}")
+    else:
+        print(f"downloading {args.url} -> {args.raw}")
+        download(args.url, args.raw)
+
+    raw = json.loads(args.raw.read_text(encoding="utf-8"))
+    sample = build_eval_set(raw, sample_size=args.sample_size, seed=args.seed)
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "source": RAW_URL,
+        "sample_seed": args.seed,
+        "n": len(sample),
+        "companies": sample,
+    }
+    args.out.write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    n_eligible = sum(1 for c in raw if eligible(c))
+    write_manifest(
+        raw_path=args.raw,
+        eval_path=args.out,
+        manifest_path=args.manifest,
+        n_raw=len(raw),
+        n_eligible=n_eligible,
+        n_eval=len(sample),
+        seed=args.seed,
+    )
+    print(f"raw={len(raw)} eligible={n_eligible} eval={len(sample)} -> {args.out}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
