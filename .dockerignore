@@ -1,0 +1,17 @@
+.git
+.venv
+.env
+.pytest_cache
+.mypy_cache
+.ruff_cache
+__pycache__
+*.pyc
+.coverage
+coverage.xml
+htmlcov
+data/raw
+data/outputs
+notebooks
+tests
+docs
+demo
