@@ -29,6 +29,9 @@ from typing import Any
 import httpx
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:  # allow `python scripts/x.py` without installing
+    sys.path.insert(0, str(REPO_ROOT))
+
 DATA_DIR = REPO_ROOT / "data"
 RAW_URL = "https://raw.githubusercontent.com/yc-oss/api/main/companies/all.json"
 RAW_PATH = DATA_DIR / "raw" / "yc_companies_all.json"

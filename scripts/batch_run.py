@@ -25,14 +25,16 @@ from typing import Any
 
 from loguru import logger
 
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:  # allow `python scripts/x.py` without installing
+    sys.path.insert(0, str(REPO_ROOT))
+
 from eval.ground_truth import DEFAULT_GROUND_TRUTH, GroundTruthCompany, load_ground_truth
 from src.agents.orchestrator import build_components, build_graph, research_company
 from src.api.schemas import ResearchResponse
 from src.config import get_settings
 from src.observability import configure_logging
 from src.storage import PostgresRepository, build_repository
-
-REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
 def _slug(name: str) -> str:
