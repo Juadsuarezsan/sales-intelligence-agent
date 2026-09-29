@@ -106,14 +106,16 @@ def build_graph():
     g.add_node("execute", execute_node)
     g.add_node("reflect", reflect_node)
     g.add_node("build", build_profile_node)
-    g.add_node("email", write_email_node)
+    # Node names must not collide with AgentState keys (langgraph raises
+    # "'email' is already being used as a state key"), hence "write_email".
+    g.add_node("write_email", write_email_node)
 
     g.set_entry_point("plan")
     g.add_edge("plan", "execute")
     g.add_edge("execute", "reflect")
     g.add_conditional_edges("reflect", route, {"plan": "plan", "build": "build"})
-    g.add_edge("build", "email")
-    g.add_edge("email", END)
+    g.add_edge("build", "write_email")
+    g.add_edge("write_email", END)
     return g.compile()
 
 
