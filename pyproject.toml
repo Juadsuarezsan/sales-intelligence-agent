@@ -76,6 +76,12 @@ exclude = ["\\.venv", "build"]
 module = ["tavily.*", "selectolax.*", "slowapi.*", "langgraph.*", "langsmith.*"]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+# nbformat ships no type annotations.
+module = ["scripts.run_notebook"]
+disallow_untyped_calls = false
+warn_return_any = false
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
