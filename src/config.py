@@ -15,6 +15,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 #: Dated model ID the application is pinned to. Never use an undated alias.
 DEFAULT_MODEL = "claude-sonnet-4-5-20250929"
+# The spec requires a stronger model than the writer as judge, so the note is not
+# self-congratulatory. Current Opus ID; complete as-is (no date suffix).
+DEFAULT_JUDGE_MODEL = "claude-opus-5-5"
 
 
 class Settings(BaseSettings):
@@ -24,7 +27,7 @@ class Settings(BaseSettings):
         anthropic_api_key: Anthropic API key. ``None`` selects the deterministic
             offline fallback for every LLM node.
         anthropic_model: Dated Claude model ID used by the agent nodes.
-        judge_model: Dated Claude model ID used by the LLM-as-judge scorer.
+        judge_model: Claude model ID used by the LLM-as-judge scorer (Opus by default).
         llm_timeout_seconds: Per-request timeout for Anthropic calls.
         llm_max_attempts: Retry attempts (tenacity) for Anthropic calls.
         price_input_per_mtok: USD per million input tokens, used for ``cost_usd``.
@@ -54,7 +57,7 @@ class Settings(BaseSettings):
 
     anthropic_api_key: str | None = Field(default=None, alias="ANTHROPIC_API_KEY")
     anthropic_model: str = Field(default=DEFAULT_MODEL, alias="ANTHROPIC_MODEL")
-    judge_model: str = Field(default=DEFAULT_MODEL, alias="JUDGE_MODEL")
+    judge_model: str = Field(default=DEFAULT_JUDGE_MODEL, alias="JUDGE_MODEL")
     llm_timeout_seconds: float = Field(default=30.0, alias="LLM_TIMEOUT_SECONDS", gt=0)
     llm_max_attempts: int = Field(default=3, alias="LLM_MAX_ATTEMPTS", ge=1, le=10)
     price_input_per_mtok: float = Field(default=3.00, alias="PRICE_INPUT_PER_MTOK", ge=0)
