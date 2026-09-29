@@ -1,86 +1,866 @@
 {
-  "project": "sales-intelligence-agent",
-  "generated_at": "2026-05-16T00:00:00Z",
-  "predictions": [
-    {
-      "ticket": "TechCorp Inc \u00b7 CTO \u00b7 series-B fintech \u00b7 200 employees \u00b7 just raised $40M",
-      "top_intent": "Tier-1 / qualified",
-      "confidence": 0.93,
-      "alternatives": [
-        {
-          "intent": "Tier-2 / nurture",
-          "confidence": 0.06
-        },
-        {
-          "intent": "Disqualified",
-          "confidence": 0.01
-        }
-      ],
-      "inference_ms": 4821.0
+ "project": "sales-intelligence-agent",
+ "generated_at": "2026-09-29T01:22:21+00:00",
+ "generator": "scripts/batch_run.py",
+ "mode": "fallback determinista, sin LLM",
+ "model": "claude-sonnet-4-5-20250929",
+ "note": "Casos pre-generados por el pipeline del repositorio. Sin ANTHROPIC_API_KEY ni TAVILY_API_KEY los nodos usan su fallback determinista y las búsquedas son stubs: los perfiles y emails ilustran el formato, no la calidad del sistema.",
+ "cases": [
+  {
+   "yc": {
+    "batch": "Winter 2012",
+    "industry": "B2B",
+    "location": "San Francisco, CA, USA",
+    "team_size": 250,
+    "one_liner": "High Performance Computing Built for the Cloud",
+    "yc_url": "https://www.ycombinator.com/companies/rescale"
+   },
+   "result": {
+    "trace_id": "11e59e725b334641929b54b968278c92",
+    "company_name": "Rescale",
+    "profile": {
+     "name": "Rescale",
+     "one_liner": "Modern B2B software platform.",
+     "industry": null,
+     "website": "https://rescale.com",
+     "employees_est": null,
+     "funding_total_usd": 40000000.0,
+     "last_funding_round": "Series B",
+     "location": null,
+     "key_people": [
+      {
+       "name": "John Doe",
+       "role": "CEO",
+       "linkedin_url": null
+      },
+      {
+       "name": "Jane Smith",
+       "role": "CTO",
+       "linkedin_url": null
+      }
+     ],
+     "recent_signals": [
+      {
+       "kind": "funding",
+       "description": "Rescale Recent Funding Round raises Series B",
+       "source_url": "https://techcrunch.com/example-funding",
+       "occurred_at": null
+      },
+      {
+       "kind": "news",
+       "description": "Show HN: Rescale launches new feature",
+       "source_url": "https://news.ycombinator.com/item?id=12345",
+       "occurred_at": null
+      },
+      {
+       "kind": "news",
+       "description": "Ask HN: experiences with Rescale?",
+       "source_url": "https://news.ycombinator.com/item?id=12346",
+       "occurred_at": null
+      },
+      {
+       "kind": "hiring",
+       "description": "4 open roles on careers page",
+       "source_url": "https://rescale.com/careers",
+       "occurred_at": null
+      }
+     ],
+     "pain_points": [],
+     "sources": [
+      "https://techcrunch.com/example-funding",
+      "https://example.com/about",
+      "https://example.com/product",
+      "https://example.com/careers",
+      "https://example.com",
+      "https://news.ycombinator.com/item?id=12345",
+      "https://news.ycombinator.com/item?id=12346",
+      "https://rescale.com",
+      "https://rescale.com/about",
+      "https://rescale.com/careers"
+     ]
     },
-    {
-      "ticket": "Startup XYZ \u00b7 Founder \u00b7 3 employees \u00b7 pre-seed \u00b7 no funding announced",
-      "top_intent": "Tier-3 / nurture",
-      "confidence": 0.78,
-      "alternatives": [
-        {
-          "intent": "Disqualified",
-          "confidence": 0.18
-        },
-        {
-          "intent": "Tier-2 / nurture",
-          "confidence": 0.04
-        }
-      ],
-      "inference_ms": 4456.0
+    "hooks": {
+     "pain_point": "post-raise growth targets outpace what manual operations can deliver",
+     "recent_signal": "funding: Rescale Recent Funding Round raises Series B",
+     "angle": "Because Rescale just showed funding, automating the workflows behind that growth frees the team from the manual work behind 'post-raise growth targets outpace what manual operations can deliver'.",
+     "evidence_refs": [
+      "https://techcrunch.com/example-funding"
+     ]
     },
-    {
-      "ticket": "MegaBank Corp \u00b7 VP Engineering \u00b7 enterprise \u00b7 50k employees \u00b7 hiring 30 SREs",
-      "top_intent": "Tier-1 / qualified",
-      "confidence": 0.96,
-      "alternatives": [
-        {
-          "intent": "Tier-2 / nurture",
-          "confidence": 0.03
-        },
-        {
-          "intent": "Disqualified",
-          "confidence": 0.01
-        }
-      ],
-      "inference_ms": 5123.0
+    "email": {
+     "subject": "an AI workflow platform for Rescale",
+     "greeting": "Hi John,",
+     "hook": "I noticed Rescale's recent funding: Rescale Recent Funding Round raises Series B.",
+     "value_prop": "We build an AI workflow platform for teams where post-raise growth targets outpace what manual operations can deliver; customers cut that manual work by a measurable margin within a quarter.",
+     "cta": "Worth a 20-minute conversation next week?",
+     "personalization_score": 0.6
     },
-    {
-      "ticket": "Acme LLC \u00b7 Marketing Manager \u00b7 30 employees \u00b7 no recent signals",
-      "top_intent": "Tier-3 / nurture",
-      "confidence": 0.71,
-      "alternatives": [
-        {
-          "intent": "Disqualified",
-          "confidence": 0.21
-        },
-        {
-          "intent": "Tier-2 / nurture",
-          "confidence": 0.08
-        }
-      ],
-      "inference_ms": 4198.0
+    "scores": {
+     "personalization": 5,
+     "accuracy": 4,
+     "cta_clarity": 4,
+     "overall": 4.33,
+     "rationale": "heuristic: facts=4 claims=1 unsupported=0 cta_format=True cta_time=True",
+     "judge": "heuristic"
     },
-    {
-      "ticket": "GrowthCo \u00b7 Head of AI \u00b7 series-C \u00b7 adopted LangChain \u00b7 public Slack hiring posts",
-      "top_intent": "Tier-1 / qualified",
-      "confidence": 0.91,
-      "alternatives": [
-        {
-          "intent": "Tier-2 / nurture",
-          "confidence": 0.08
-        },
-        {
-          "intent": "Disqualified",
-          "confidence": 0.01
-        }
-      ],
-      "inference_ms": 4892.0
-    }
-  ]
+    "tool_calls": 7,
+    "iterations": 1,
+    "latency_ms": 22,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cost_usd": 0.0,
+    "mode": "fallback",
+    "cached": false
+   }
+  },
+  {
+   "yc": {
+    "batch": "Winter 2012",
+    "industry": "B2B",
+    "location": "San Francisco, CA, USA",
+    "team_size": 2400,
+    "one_liner": "Provides growing businesses with everything to take care of their team",
+    "yc_url": "https://www.ycombinator.com/companies/gusto"
+   },
+   "result": {
+    "trace_id": "deb2de254ba14b458e47316c138edf84",
+    "company_name": "Gusto",
+    "profile": {
+     "name": "Gusto",
+     "one_liner": "Modern B2B software platform.",
+     "industry": null,
+     "website": "https://gusto.com",
+     "employees_est": null,
+     "funding_total_usd": 40000000.0,
+     "last_funding_round": "Series B",
+     "location": null,
+     "key_people": [
+      {
+       "name": "John Doe",
+       "role": "CEO",
+       "linkedin_url": null
+      },
+      {
+       "name": "Jane Smith",
+       "role": "CTO",
+       "linkedin_url": null
+      }
+     ],
+     "recent_signals": [
+      {
+       "kind": "funding",
+       "description": "Gusto Recent Funding Round raises Series B",
+       "source_url": "https://techcrunch.com/example-funding",
+       "occurred_at": null
+      },
+      {
+       "kind": "news",
+       "description": "Show HN: Gusto launches new feature",
+       "source_url": "https://news.ycombinator.com/item?id=12345",
+       "occurred_at": null
+      },
+      {
+       "kind": "news",
+       "description": "Ask HN: experiences with Gusto?",
+       "source_url": "https://news.ycombinator.com/item?id=12346",
+       "occurred_at": null
+      },
+      {
+       "kind": "hiring",
+       "description": "4 open roles on careers page",
+       "source_url": "https://gusto.com/careers",
+       "occurred_at": null
+      }
+     ],
+     "pain_points": [],
+     "sources": [
+      "https://techcrunch.com/example-funding",
+      "https://example.com/about",
+      "https://example.com/product",
+      "https://example.com/careers",
+      "https://example.com",
+      "https://news.ycombinator.com/item?id=12345",
+      "https://news.ycombinator.com/item?id=12346",
+      "https://gusto.com",
+      "https://gusto.com/about",
+      "https://gusto.com/careers"
+     ]
+    },
+    "hooks": {
+     "pain_point": "post-raise growth targets outpace what manual operations can deliver",
+     "recent_signal": "funding: Gusto Recent Funding Round raises Series B",
+     "angle": "Because Gusto just showed funding, automating the workflows behind that growth frees the team from the manual work behind 'post-raise growth targets outpace what manual operations can deliver'.",
+     "evidence_refs": [
+      "https://techcrunch.com/example-funding"
+     ]
+    },
+    "email": {
+     "subject": "an AI workflow platform for Gusto",
+     "greeting": "Hi John,",
+     "hook": "I noticed Gusto's recent funding: Gusto Recent Funding Round raises Series B.",
+     "value_prop": "We build an AI workflow platform for teams where post-raise growth targets outpace what manual operations can deliver; customers cut that manual work by a measurable margin within a quarter.",
+     "cta": "Worth a 20-minute conversation next week?",
+     "personalization_score": 0.6
+    },
+    "scores": {
+     "personalization": 5,
+     "accuracy": 4,
+     "cta_clarity": 4,
+     "overall": 4.33,
+     "rationale": "heuristic: facts=4 claims=1 unsupported=0 cta_format=True cta_time=True",
+     "judge": "heuristic"
+    },
+    "tool_calls": 7,
+    "iterations": 1,
+    "latency_ms": 21,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cost_usd": 0.0,
+    "mode": "fallback",
+    "cached": false
+   }
+  },
+  {
+   "yc": {
+    "batch": "Winter 2011",
+    "industry": "Consumer",
+    "location": "Tokyo, Tokyo, Japan; San Francisco, CA, USA; Remote",
+    "team_size": 2,
+    "one_liner": "Custom-made artwork from artists e-commerce marketplace.",
+    "yc_url": "https://www.ycombinator.com/companies/instapainting"
+   },
+   "result": {
+    "trace_id": "7a2cec1b8b734f26baf6ecdeae3e8fcb",
+    "company_name": "Instapainting",
+    "profile": {
+     "name": "Instapainting",
+     "one_liner": "Modern B2B software platform.",
+     "industry": null,
+     "website": "http://instapainting.com",
+     "employees_est": null,
+     "funding_total_usd": 40000000.0,
+     "last_funding_round": "Series B",
+     "location": null,
+     "key_people": [
+      {
+       "name": "John Doe",
+       "role": "CEO",
+       "linkedin_url": null
+      },
+      {
+       "name": "Jane Smith",
+       "role": "CTO",
+       "linkedin_url": null
+      }
+     ],
+     "recent_signals": [
+      {
+       "kind": "funding",
+       "description": "Instapainting Recent Funding Round raises Series B",
+       "source_url": "https://techcrunch.com/example-funding",
+       "occurred_at": null
+      },
+      {
+       "kind": "news",
+       "description": "Show HN: Instapainting launches new feature",
+       "source_url": "https://news.ycombinator.com/item?id=12345",
+       "occurred_at": null
+      },
+      {
+       "kind": "news",
+       "description": "Ask HN: experiences with Instapainting?",
+       "source_url": "https://news.ycombinator.com/item?id=12346",
+       "occurred_at": null
+      },
+      {
+       "kind": "hiring",
+       "description": "4 open roles on careers page",
+       "source_url": "http://instapainting.com/careers",
+       "occurred_at": null
+      }
+     ],
+     "pain_points": [],
+     "sources": [
+      "https://techcrunch.com/example-funding",
+      "https://example.com/about",
+      "https://example.com/product",
+      "https://example.com/careers",
+      "https://example.com",
+      "https://news.ycombinator.com/item?id=12345",
+      "https://news.ycombinator.com/item?id=12346",
+      "http://instapainting.com",
+      "http://instapainting.com/about",
+      "http://instapainting.com/careers"
+     ]
+    },
+    "hooks": {
+     "pain_point": "post-raise growth targets outpace what manual operations can deliver",
+     "recent_signal": "funding: Instapainting Recent Funding Round raises Series B",
+     "angle": "Because Instapainting just showed funding, automating the workflows behind that growth frees the team from the manual work behind 'post-raise growth targets outpace what manual operations can deliver'.",
+     "evidence_refs": [
+      "https://techcrunch.com/example-funding"
+     ]
+    },
+    "email": {
+     "subject": "an AI workflow platform for Instapainting",
+     "greeting": "Hi John,",
+     "hook": "I noticed Instapainting's recent funding: Instapainting Recent Funding Round raises Series B.",
+     "value_prop": "We build an AI workflow platform for teams where post-raise growth targets outpace what manual operations can deliver; customers cut that manual work by a measurable margin within a quarter.",
+     "cta": "Worth a 20-minute conversation next week?",
+     "personalization_score": 0.6
+    },
+    "scores": {
+     "personalization": 5,
+     "accuracy": 4,
+     "cta_clarity": 4,
+     "overall": 4.33,
+     "rationale": "heuristic: facts=4 claims=1 unsupported=0 cta_format=True cta_time=True",
+     "judge": "heuristic"
+    },
+    "tool_calls": 7,
+    "iterations": 1,
+    "latency_ms": 21,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cost_usd": 0.0,
+    "mode": "fallback",
+    "cached": false
+   }
+  },
+  {
+   "yc": {
+    "batch": "Summer 2010",
+    "industry": "B2B",
+    "location": "San Francisco, CA, USA",
+    "team_size": 201,
+    "one_liner": "Software development platform.",
+    "yc_url": "https://www.ycombinator.com/companies/docker"
+   },
+   "result": {
+    "trace_id": "54567eab74de42cfa69b9051b97d14d7",
+    "company_name": "Docker",
+    "profile": {
+     "name": "Docker",
+     "one_liner": "Modern B2B software platform.",
+     "industry": null,
+     "website": "http://docker.com",
+     "employees_est": null,
+     "funding_total_usd": 40000000.0,
+     "last_funding_round": "Series B",
+     "location": null,
+     "key_people": [
+      {
+       "name": "John Doe",
+       "role": "CEO",
+       "linkedin_url": null
+      },
+      {
+       "name": "Jane Smith",
+       "role": "CTO",
+       "linkedin_url": null
+      }
+     ],
+     "recent_signals": [
+      {
+       "kind": "funding",
+       "description": "Docker Recent Funding Round raises Series B",
+       "source_url": "https://techcrunch.com/example-funding",
+       "occurred_at": null
+      },
+      {
+       "kind": "news",
+       "description": "Show HN: Docker launches new feature",
+       "source_url": "https://news.ycombinator.com/item?id=12345",
+       "occurred_at": null
+      },
+      {
+       "kind": "news",
+       "description": "Ask HN: experiences with Docker?",
+       "source_url": "https://news.ycombinator.com/item?id=12346",
+       "occurred_at": null
+      },
+      {
+       "kind": "hiring",
+       "description": "4 open roles on careers page",
+       "source_url": "http://docker.com/careers",
+       "occurred_at": null
+      }
+     ],
+     "pain_points": [],
+     "sources": [
+      "https://techcrunch.com/example-funding",
+      "https://example.com/about",
+      "https://example.com/product",
+      "https://example.com/careers",
+      "https://example.com",
+      "https://news.ycombinator.com/item?id=12345",
+      "https://news.ycombinator.com/item?id=12346",
+      "http://docker.com",
+      "http://docker.com/about",
+      "http://docker.com/careers"
+     ]
+    },
+    "hooks": {
+     "pain_point": "post-raise growth targets outpace what manual operations can deliver",
+     "recent_signal": "funding: Docker Recent Funding Round raises Series B",
+     "angle": "Because Docker just showed funding, automating the workflows behind that growth frees the team from the manual work behind 'post-raise growth targets outpace what manual operations can deliver'.",
+     "evidence_refs": [
+      "https://techcrunch.com/example-funding"
+     ]
+    },
+    "email": {
+     "subject": "an AI workflow platform for Docker",
+     "greeting": "Hi John,",
+     "hook": "I noticed Docker's recent funding: Docker Recent Funding Round raises Series B.",
+     "value_prop": "We build an AI workflow platform for teams where post-raise growth targets outpace what manual operations can deliver; customers cut that manual work by a measurable margin within a quarter.",
+     "cta": "Worth a 20-minute conversation next week?",
+     "personalization_score": 0.6
+    },
+    "scores": {
+     "personalization": 5,
+     "accuracy": 4,
+     "cta_clarity": 4,
+     "overall": 4.33,
+     "rationale": "heuristic: facts=4 claims=1 unsupported=0 cta_format=True cta_time=True",
+     "judge": "heuristic"
+    },
+    "tool_calls": 7,
+    "iterations": 1,
+    "latency_ms": 21,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cost_usd": 0.0,
+    "mode": "fallback",
+    "cached": false
+   }
+  },
+  {
+   "yc": {
+    "batch": "Summer 2012",
+    "industry": "B2B",
+    "location": "San Francisco, CA, USA",
+    "team_size": 750,
+    "one_liner": "Unlocking the power of biotech with modern software for modern science",
+    "yc_url": "https://www.ycombinator.com/companies/benchling"
+   },
+   "result": {
+    "trace_id": "7a120fc6230641b293b40afacd4f76bb",
+    "company_name": "Benchling",
+    "profile": {
+     "name": "Benchling",
+     "one_liner": "Modern B2B software platform.",
+     "industry": null,
+     "website": "http://benchling.com",
+     "employees_est": null,
+     "funding_total_usd": 40000000.0,
+     "last_funding_round": "Series B",
+     "location": null,
+     "key_people": [
+      {
+       "name": "John Doe",
+       "role": "CEO",
+       "linkedin_url": null
+      },
+      {
+       "name": "Jane Smith",
+       "role": "CTO",
+       "linkedin_url": null
+      }
+     ],
+     "recent_signals": [
+      {
+       "kind": "funding",
+       "description": "Benchling Recent Funding Round raises Series B",
+       "source_url": "https://techcrunch.com/example-funding",
+       "occurred_at": null
+      },
+      {
+       "kind": "news",
+       "description": "Show HN: Benchling launches new feature",
+       "source_url": "https://news.ycombinator.com/item?id=12345",
+       "occurred_at": null
+      },
+      {
+       "kind": "news",
+       "description": "Ask HN: experiences with Benchling?",
+       "source_url": "https://news.ycombinator.com/item?id=12346",
+       "occurred_at": null
+      },
+      {
+       "kind": "hiring",
+       "description": "4 open roles on careers page",
+       "source_url": "http://benchling.com/careers",
+       "occurred_at": null
+      }
+     ],
+     "pain_points": [],
+     "sources": [
+      "https://techcrunch.com/example-funding",
+      "https://example.com/about",
+      "https://example.com/product",
+      "https://example.com/careers",
+      "https://example.com",
+      "https://news.ycombinator.com/item?id=12345",
+      "https://news.ycombinator.com/item?id=12346",
+      "http://benchling.com",
+      "http://benchling.com/about",
+      "http://benchling.com/careers"
+     ]
+    },
+    "hooks": {
+     "pain_point": "post-raise growth targets outpace what manual operations can deliver",
+     "recent_signal": "funding: Benchling Recent Funding Round raises Series B",
+     "angle": "Because Benchling just showed funding, automating the workflows behind that growth frees the team from the manual work behind 'post-raise growth targets outpace what manual operations can deliver'.",
+     "evidence_refs": [
+      "https://techcrunch.com/example-funding"
+     ]
+    },
+    "email": {
+     "subject": "an AI workflow platform for Benchling",
+     "greeting": "Hi John,",
+     "hook": "I noticed Benchling's recent funding: Benchling Recent Funding Round raises Series B.",
+     "value_prop": "We build an AI workflow platform for teams where post-raise growth targets outpace what manual operations can deliver; customers cut that manual work by a measurable margin within a quarter.",
+     "cta": "Worth a 20-minute conversation next week?",
+     "personalization_score": 0.6
+    },
+    "scores": {
+     "personalization": 5,
+     "accuracy": 4,
+     "cta_clarity": 4,
+     "overall": 4.33,
+     "rationale": "heuristic: facts=4 claims=1 unsupported=0 cta_format=True cta_time=True",
+     "judge": "heuristic"
+    },
+    "tool_calls": 7,
+    "iterations": 1,
+    "latency_ms": 26,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cost_usd": 0.0,
+    "mode": "fallback",
+    "cached": false
+   }
+  },
+  {
+   "yc": {
+    "batch": "Winter 2014",
+    "industry": "Consumer",
+    "location": "San Francisco, CA, USA; Remote",
+    "team_size": 3,
+    "one_liner": "Push things to your other things.",
+    "yc_url": "https://www.ycombinator.com/companies/pushbullet"
+   },
+   "result": {
+    "trace_id": "ae710ef9120641fbb805c566bb73d0a4",
+    "company_name": "Pushbullet",
+    "profile": {
+     "name": "Pushbullet",
+     "one_liner": "Modern B2B software platform.",
+     "industry": null,
+     "website": "https://www.pushbullet.com",
+     "employees_est": null,
+     "funding_total_usd": 40000000.0,
+     "last_funding_round": "Series B",
+     "location": null,
+     "key_people": [
+      {
+       "name": "John Doe",
+       "role": "CEO",
+       "linkedin_url": null
+      },
+      {
+       "name": "Jane Smith",
+       "role": "CTO",
+       "linkedin_url": null
+      }
+     ],
+     "recent_signals": [
+      {
+       "kind": "funding",
+       "description": "Pushbullet Recent Funding Round raises Series B",
+       "source_url": "https://techcrunch.com/example-funding",
+       "occurred_at": null
+      },
+      {
+       "kind": "news",
+       "description": "Show HN: Pushbullet launches new feature",
+       "source_url": "https://news.ycombinator.com/item?id=12345",
+       "occurred_at": null
+      },
+      {
+       "kind": "news",
+       "description": "Ask HN: experiences with Pushbullet?",
+       "source_url": "https://news.ycombinator.com/item?id=12346",
+       "occurred_at": null
+      },
+      {
+       "kind": "hiring",
+       "description": "4 open roles on careers page",
+       "source_url": "https://www.pushbullet.com/careers",
+       "occurred_at": null
+      }
+     ],
+     "pain_points": [],
+     "sources": [
+      "https://techcrunch.com/example-funding",
+      "https://example.com/about",
+      "https://example.com/product",
+      "https://example.com/careers",
+      "https://example.com",
+      "https://news.ycombinator.com/item?id=12345",
+      "https://news.ycombinator.com/item?id=12346",
+      "https://www.pushbullet.com",
+      "https://www.pushbullet.com/about",
+      "https://www.pushbullet.com/careers"
+     ]
+    },
+    "hooks": {
+     "pain_point": "post-raise growth targets outpace what manual operations can deliver",
+     "recent_signal": "funding: Pushbullet Recent Funding Round raises Series B",
+     "angle": "Because Pushbullet just showed funding, automating the workflows behind that growth frees the team from the manual work behind 'post-raise growth targets outpace what manual operations can deliver'.",
+     "evidence_refs": [
+      "https://techcrunch.com/example-funding"
+     ]
+    },
+    "email": {
+     "subject": "an AI workflow platform for Pushbullet",
+     "greeting": "Hi John,",
+     "hook": "I noticed Pushbullet's recent funding: Pushbullet Recent Funding Round raises Series B.",
+     "value_prop": "We build an AI workflow platform for teams where post-raise growth targets outpace what manual operations can deliver; customers cut that manual work by a measurable margin within a quarter.",
+     "cta": "Worth a 20-minute conversation next week?",
+     "personalization_score": 0.6
+    },
+    "scores": {
+     "personalization": 5,
+     "accuracy": 4,
+     "cta_clarity": 4,
+     "overall": 4.33,
+     "rationale": "heuristic: facts=4 claims=1 unsupported=0 cta_format=True cta_time=True",
+     "judge": "heuristic"
+    },
+    "tool_calls": 7,
+    "iterations": 1,
+    "latency_ms": 26,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cost_usd": 0.0,
+    "mode": "fallback",
+    "cached": false
+   }
+  },
+  {
+   "yc": {
+    "batch": "Winter 2014",
+    "industry": "Fintech",
+    "location": "Sterling, VA, USA; Remote",
+    "team_size": 1,
+    "one_liner": "Direct P2P lending across the international wealth divide.",
+    "yc_url": "https://www.ycombinator.com/companies/zidisha"
+   },
+   "result": {
+    "trace_id": "41b4bfc164434450bf862f82d560eb3d",
+    "company_name": "Zidisha",
+    "profile": {
+     "name": "Zidisha",
+     "one_liner": "Modern B2B software platform.",
+     "industry": null,
+     "website": "https://www.zidisha.org",
+     "employees_est": null,
+     "funding_total_usd": 40000000.0,
+     "last_funding_round": "Series B",
+     "location": null,
+     "key_people": [
+      {
+       "name": "John Doe",
+       "role": "CEO",
+       "linkedin_url": null
+      },
+      {
+       "name": "Jane Smith",
+       "role": "CTO",
+       "linkedin_url": null
+      }
+     ],
+     "recent_signals": [
+      {
+       "kind": "funding",
+       "description": "Zidisha Recent Funding Round raises Series B",
+       "source_url": "https://techcrunch.com/example-funding",
+       "occurred_at": null
+      },
+      {
+       "kind": "news",
+       "description": "Show HN: Zidisha launches new feature",
+       "source_url": "https://news.ycombinator.com/item?id=12345",
+       "occurred_at": null
+      },
+      {
+       "kind": "news",
+       "description": "Ask HN: experiences with Zidisha?",
+       "source_url": "https://news.ycombinator.com/item?id=12346",
+       "occurred_at": null
+      },
+      {
+       "kind": "hiring",
+       "description": "4 open roles on careers page",
+       "source_url": "https://www.zidisha.org/careers",
+       "occurred_at": null
+      }
+     ],
+     "pain_points": [],
+     "sources": [
+      "https://techcrunch.com/example-funding",
+      "https://example.com/about",
+      "https://example.com/product",
+      "https://example.com/careers",
+      "https://example.com",
+      "https://news.ycombinator.com/item?id=12345",
+      "https://news.ycombinator.com/item?id=12346",
+      "https://www.zidisha.org",
+      "https://www.zidisha.org/about",
+      "https://www.zidisha.org/careers"
+     ]
+    },
+    "hooks": {
+     "pain_point": "post-raise growth targets outpace what manual operations can deliver",
+     "recent_signal": "funding: Zidisha Recent Funding Round raises Series B",
+     "angle": "Because Zidisha just showed funding, automating the workflows behind that growth frees the team from the manual work behind 'post-raise growth targets outpace what manual operations can deliver'.",
+     "evidence_refs": [
+      "https://techcrunch.com/example-funding"
+     ]
+    },
+    "email": {
+     "subject": "an AI workflow platform for Zidisha",
+     "greeting": "Hi John,",
+     "hook": "I noticed Zidisha's recent funding: Zidisha Recent Funding Round raises Series B.",
+     "value_prop": "We build an AI workflow platform for teams where post-raise growth targets outpace what manual operations can deliver; customers cut that manual work by a measurable margin within a quarter.",
+     "cta": "Worth a 20-minute conversation next week?",
+     "personalization_score": 0.6
+    },
+    "scores": {
+     "personalization": 5,
+     "accuracy": 4,
+     "cta_clarity": 4,
+     "overall": 4.33,
+     "rationale": "heuristic: facts=4 claims=1 unsupported=0 cta_format=True cta_time=True",
+     "judge": "heuristic"
+    },
+    "tool_calls": 7,
+    "iterations": 1,
+    "latency_ms": 27,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cost_usd": 0.0,
+    "mode": "fallback",
+    "cached": false
+   }
+  },
+  {
+   "yc": {
+    "batch": "Summer 2014",
+    "industry": "B2B",
+    "location": "Austria; Remote",
+    "team_size": 100,
+    "one_liner": "The AI Command Center for outbound and ABM",
+    "yc_url": "https://www.ycombinator.com/companies/usergems"
+   },
+   "result": {
+    "trace_id": "4580370ba9224c5abf0d719c4359278b",
+    "company_name": "UserGems",
+    "profile": {
+     "name": "UserGems",
+     "one_liner": "Modern B2B software platform.",
+     "industry": null,
+     "website": "https://www.usergems.com",
+     "employees_est": null,
+     "funding_total_usd": 40000000.0,
+     "last_funding_round": "Series B",
+     "location": null,
+     "key_people": [
+      {
+       "name": "John Doe",
+       "role": "CEO",
+       "linkedin_url": null
+      },
+      {
+       "name": "Jane Smith",
+       "role": "CTO",
+       "linkedin_url": null
+      }
+     ],
+     "recent_signals": [
+      {
+       "kind": "funding",
+       "description": "Usergems Recent Funding Round raises Series B",
+       "source_url": "https://techcrunch.com/example-funding",
+       "occurred_at": null
+      },
+      {
+       "kind": "news",
+       "description": "Show HN: UserGems launches new feature",
+       "source_url": "https://news.ycombinator.com/item?id=12345",
+       "occurred_at": null
+      },
+      {
+       "kind": "news",
+       "description": "Ask HN: experiences with UserGems?",
+       "source_url": "https://news.ycombinator.com/item?id=12346",
+       "occurred_at": null
+      },
+      {
+       "kind": "hiring",
+       "description": "4 open roles on careers page",
+       "source_url": "https://www.usergems.com/careers",
+       "occurred_at": null
+      }
+     ],
+     "pain_points": [],
+     "sources": [
+      "https://techcrunch.com/example-funding",
+      "https://example.com/about",
+      "https://example.com/product",
+      "https://example.com/careers",
+      "https://example.com",
+      "https://news.ycombinator.com/item?id=12345",
+      "https://news.ycombinator.com/item?id=12346",
+      "https://www.usergems.com",
+      "https://www.usergems.com/about",
+      "https://www.usergems.com/careers"
+     ]
+    },
+    "hooks": {
+     "pain_point": "post-raise growth targets outpace what manual operations can deliver",
+     "recent_signal": "funding: Usergems Recent Funding Round raises Series B",
+     "angle": "Because UserGems just showed funding, automating the workflows behind that growth frees the team from the manual work behind 'post-raise growth targets outpace what manual operations can deliver'.",
+     "evidence_refs": [
+      "https://techcrunch.com/example-funding"
+     ]
+    },
+    "email": {
+     "subject": "an AI workflow platform for UserGems",
+     "greeting": "Hi John,",
+     "hook": "I noticed UserGems's recent funding: Usergems Recent Funding Round raises Series B.",
+     "value_prop": "We build an AI workflow platform for teams where post-raise growth targets outpace what manual operations can deliver; customers cut that manual work by a measurable margin within a quarter.",
+     "cta": "Worth a 20-minute conversation next week?",
+     "personalization_score": 0.6
+    },
+    "scores": {
+     "personalization": 5,
+     "accuracy": 4,
+     "cta_clarity": 4,
+     "overall": 4.33,
+     "rationale": "heuristic: facts=4 claims=1 unsupported=0 cta_format=True cta_time=True",
+     "judge": "heuristic"
+    },
+    "tool_calls": 7,
+    "iterations": 1,
+    "latency_ms": 27,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cost_usd": 0.0,
+    "mode": "fallback",
+    "cached": false
+   }
+  }
+ ]
 }

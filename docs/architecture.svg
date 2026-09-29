@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 640" width="1160" height="640" font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+    <marker id="arrow-loop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f59e0b"/>
+    </marker>
+  </defs>
+  <rect width="1160" height="640" fill="#0b0f17"/>
+  <text x="30" y="40" fill="#e6edf7" font-size="22" font-weight="700">B2B Sales Intelligence Agent — LangGraph plan → execute → reflect</text>
+  <text x="30" y="64" fill="#97a3b8" font-size="13">src/agents/orchestrator.py · nodes log input/output state with trace_id · tokens and cost accumulated per run</text>
+
+  <!-- Transport -->
+  <rect x="30" y="100" width="200" height="90" rx="12" fill="#121826" stroke="#334155"/>
+  <text x="130" y="130" fill="#e6edf7" font-size="14" font-weight="700" text-anchor="middle">FastAPI (src/api)</text>
+  <text x="130" y="150" fill="#97a3b8" font-size="12" text-anchor="middle">POST /api/research · GET /api/companies</text>
+  <text x="130" y="168" fill="#97a3b8" font-size="12" text-anchor="middle">CORS · slowapi · 422 · X-Trace-Id</text>
+
+  <!-- Batch / eval -->
+  <rect x="30" y="210" width="200" height="90" rx="12" fill="#121826" stroke="#334155"/>
+  <text x="130" y="240" fill="#e6edf7" font-size="14" font-weight="700" text-anchor="middle">Batch &amp; eval</text>
+  <text x="130" y="260" fill="#97a3b8" font-size="12" text-anchor="middle">scripts/batch_run.py</text>
+  <text x="130" y="278" fill="#97a3b8" font-size="12" text-anchor="middle">python -m eval.run (baselines, ablation)</text>
+
+  <!-- Storage -->
+  <rect x="30" y="320" width="200" height="90" rx="12" fill="#121826" stroke="#334155"/>
+  <text x="130" y="350" fill="#e6edf7" font-size="14" font-weight="700" text-anchor="middle">ResearchRepository</text>
+  <text x="130" y="370" fill="#97a3b8" font-size="12" text-anchor="middle">Protocol · in-memory (TTL)</text>
+  <text x="130" y="388" fill="#97a3b8" font-size="12" text-anchor="middle">PostgreSQL via psycopg_pool (JSONB)</text>
+
+  <!-- arrows from transport into graph -->
+  <path d="M 230 145 L 300 145" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M 230 255 L 270 255 L 270 145" stroke="#64748b" stroke-width="2" fill="none"/>
+  <path d="M 230 365 L 260 365 L 260 145" stroke="#64748b" stroke-width="2" fill="none" stroke-dasharray="4 4"/>
+
+  <!-- Graph container -->
+  <rect x="300" y="90" width="830" height="330" rx="16" fill="#0f1524" stroke="#1e293b"/>
+  <text x="318" y="114" fill="#64748b" font-size="12" font-weight="700">LANGGRAPH StateGraph(AgentState)</text>
+
+  <!-- Row 1: loop -->
+  <g>
+    <rect x="320" y="130" width="150" height="70" rx="10" fill="#172033" stroke="#0ea5e9"/>
+    <text x="395" y="158" fill="#e6edf7" font-size="14" font-weight="700" text-anchor="middle">plan</text>
+    <text x="395" y="178" fill="#97a3b8" font-size="11" text-anchor="middle">Claude → 3-6 queries</text>
+
+    <rect x="510" y="130" width="170" height="70" rx="10" fill="#172033" stroke="#0ea5e9"/>
+    <text x="595" y="152" fill="#e6edf7" font-size="14" font-weight="700" text-anchor="middle">execute</text>
+    <text x="595" y="170" fill="#97a3b8" font-size="11" text-anchor="middle">Tavily · HN Algolia</text>
+    <text x="595" y="186" fill="#97a3b8" font-size="11" text-anchor="middle">website: /, /about, /careers</text>
+
+    <rect x="720" y="130" width="150" height="70" rx="10" fill="#172033" stroke="#f59e0b"/>
+    <text x="795" y="152" fill="#e6edf7" font-size="14" font-weight="700" text-anchor="middle">reflect</text>
+    <text x="795" y="170" fill="#97a3b8" font-size="11" text-anchor="middle">sufficient? contradictions?</text>
+    <text x="795" y="186" fill="#97a3b8" font-size="11" text-anchor="middle">missing → follow-up queries</text>
+
+    <path d="M 470 165 L 510 165" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M 680 165 L 720 165" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+    <!-- loop back -->
+    <path d="M 795 200 L 795 225 L 395 225 L 395 200" stroke="#f59e0b" stroke-width="2" fill="none" marker-end="url(#arrow-loop)"/>
+    <text x="595" y="242" fill="#f59e0b" font-size="11" text-anchor="middle">not sufficient ∧ rounds ≤ MAX_REFLECTION_ITERATIONS ∧ tool_calls &lt; MAX_TOOL_CALLS</text>
+    <!-- down to build -->
+    <path d="M 870 165 L 930 165 L 930 300 L 490 300" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <text x="1000" y="160" fill="#97a3b8" font-size="11">sufficient / budget</text>
+    <text x="1000" y="175" fill="#97a3b8" font-size="11">exhausted → build</text>
+  </g>
+
+  <!-- Row 2: build chain -->
+  <g>
+    <rect x="320" y="270" width="170" height="60" rx="10" fill="#172033" stroke="#a78bfa"/>
+    <text x="405" y="292" fill="#e6edf7" font-size="14" font-weight="700" text-anchor="middle">build</text>
+    <text x="405" y="310" fill="#97a3b8" font-size="11" text-anchor="middle">CompanyProfile (Pydantic)</text>
+
+    <rect x="520" y="270" width="170" height="60" rx="10" fill="#172033" stroke="#a78bfa"/>
+    <text x="605" y="292" fill="#e6edf7" font-size="14" font-weight="700" text-anchor="middle">extract_hooks</text>
+    <text x="605" y="310" fill="#97a3b8" font-size="11" text-anchor="middle">pain point + recent signal</text>
+
+    <rect x="720" y="270" width="170" height="60" rx="10" fill="#172033" stroke="#a78bfa"/>
+    <text x="805" y="292" fill="#e6edf7" font-size="14" font-weight="700" text-anchor="middle">write_email</text>
+    <text x="805" y="310" fill="#97a3b8" font-size="11" text-anchor="middle">subject · hook · value prop · CTA</text>
+
+    <rect x="920" y="270" width="190" height="60" rx="10" fill="#172033" stroke="#34d399"/>
+    <text x="1015" y="292" fill="#e6edf7" font-size="14" font-weight="700" text-anchor="middle">score</text>
+    <text x="1015" y="310" fill="#97a3b8" font-size="11" text-anchor="middle">LLM-as-judge, rúbrica 1-5 ×3</text>
+
+    <path d="M 490 300 L 520 300" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M 690 300 L 720 300" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M 890 300 L 920 300" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- Fallback note -->
+  <rect x="320" y="350" width="790" height="50" rx="10" fill="#0b0f17" stroke="#1e293b"/>
+  <text x="335" y="371" fill="#97a3b8" font-size="12">Each LLM node depends on the LLMClient protocol: AnthropicLLM (pinned model, timeout, tenacity) or None → deterministic heuristic</text>
+  <text x="335" y="389" fill="#97a3b8" font-size="12">(template queries, keyword reflector, regex profile builder, industry pain map, template email, keyword judge). Tests inject a fake client.</text>
+
+  <!-- Bottom: external services -->
+  <g>
+    <rect x="300" y="450" width="190" height="70" rx="12" fill="#121826" stroke="#334155"/>
+    <text x="395" y="478" fill="#e6edf7" font-size="13" font-weight="700" text-anchor="middle">Anthropic Messages API</text>
+    <text x="395" y="498" fill="#97a3b8" font-size="11" text-anchor="middle">claude-sonnet-4-5-20250929</text>
+
+    <rect x="510" y="450" width="170" height="70" rx="12" fill="#121826" stroke="#334155"/>
+    <text x="595" y="478" fill="#e6edf7" font-size="13" font-weight="700" text-anchor="middle">Tavily search</text>
+    <text x="595" y="498" fill="#97a3b8" font-size="11" text-anchor="middle">$0.001 / búsqueda · timeout</text>
+
+    <rect x="700" y="450" width="170" height="70" rx="12" fill="#121826" stroke="#334155"/>
+    <text x="785" y="478" fill="#e6edf7" font-size="13" font-weight="700" text-anchor="middle">HN Algolia</text>
+    <text x="785" y="498" fill="#97a3b8" font-size="11" text-anchor="middle">gratis, sin llave</text>
+
+    <rect x="890" y="450" width="220" height="70" rx="12" fill="#121826" stroke="#334155"/>
+    <text x="1000" y="478" fill="#e6edf7" font-size="13" font-weight="700" text-anchor="middle">Sitio web de la empresa</text>
+    <text x="1000" y="498" fill="#97a3b8" font-size="11" text-anchor="middle">httpx + selectolax · 8 s / página</text>
+
+    <path d="M 395 420 L 395 450" stroke="#64748b" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+    <path d="M 595 420 L 595 450" stroke="#64748b" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+    <path d="M 785 420 L 785 450" stroke="#64748b" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+    <path d="M 1000 420 L 1000 450" stroke="#64748b" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- Observability -->
+  <rect x="30" y="450" width="200" height="70" rx="12" fill="#121826" stroke="#334155"/>
+  <text x="130" y="478" fill="#e6edf7" font-size="13" font-weight="700" text-anchor="middle">Observability</text>
+  <text x="130" y="498" fill="#97a3b8" font-size="11" text-anchor="middle">loguru + trace_id · UsageTracker</text>
+  <text x="130" y="513" fill="#97a3b8" font-size="11" text-anchor="middle">LangSmith via LANGCHAIN_TRACING_V2</text>
+
+  <!-- Data -->
+  <rect x="30" y="540" width="1080" height="70" rx="12" fill="#0f1524" stroke="#1e293b"/>
+  <text x="50" y="565" fill="#e6edf7" font-size="13" font-weight="700">Datos y evaluación</text>
+  <text x="50" y="585" fill="#97a3b8" font-size="12">yc-oss/api (6 253 empresas YC) → scripts/download_data.py → data/eval/yc_ground_truth_200.json (semilla 20260516, SHA-256 en data/MANIFEST.txt) → eval/metrics.py (P/R por campo) → eval/runs/*.json → eval/RESULTS.md</text>
+  <text x="50" y="602" fill="#97a3b8" font-size="12">Baselines: template-only · single-search + email · ablation de reflexión 0/1/2/3</text>
+</svg>
